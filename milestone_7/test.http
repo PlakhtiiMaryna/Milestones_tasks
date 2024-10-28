@@ -1,0 +1,7 @@
+
+GET /birthdays?month=april&department=HR
+
+###
+
+GET /anniversaries?month=april&department=HR
+
