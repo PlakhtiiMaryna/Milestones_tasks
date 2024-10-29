@@ -1,7 +1,7 @@
 
-GET /birthdays?month=april&department=HR
+GET /birthdays?month=april&department=Engineer
 
 ###
 
-GET /anniversaries?month=april&department=HR
+GET /anniversaries?month=april&department=Engineer
 
