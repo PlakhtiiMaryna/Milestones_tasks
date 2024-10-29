@@ -31,21 +31,20 @@ def get_birthdays():
     department = request.args.get('department', '')
 
     if not month or not department:
-        return jsonify({"error": "Відсутні необхідні параметри: місяць або департамент"}), 400
+        return jsonify({"Помилка": "Відсутні необхідні параметри: місяць або департамент"}), 400
     
     db = read_database('database.csv')
     result = {'total': 0, 'employees': []}
 
     normalized_month = normalize_month(month)
     if not normalized_month:
-        return jsonify({"error": "Неправильний формат місяця"}), 400
+        return jsonify({"Помилка": "Неправильний формат місяця"}), 400
 
     for emp in db:
         try:
             if not emp.get('birthday') or not emp.get('department'):
                 continue
                 
-            # Extract month from the birthday field in the format YYYY-MM-DD
             emp_birthday = emp['birthday']
             emp_department = emp['department'].lower()
 
@@ -66,6 +65,49 @@ def get_birthdays():
         return jsonify({"Повдомлення" : "Співробітників не знайдено"}), 404
         
     return jsonify(result)
+
+@app.get('/anniversaries')
+def get_anniversaries():
+    month = request.args.get('month', '')
+    department = request.args.get('department', '')
+
+    if not month or not department:
+        return jsonify({"Помилка": "Відсутні необхідні параметри: місяць або департамент"}), 400
+    
+    db = read_database('database.csv')
+    result = {'total' : 0, 'employees' : []}
+
+    normalized_month = normalize_month(month)
+    if not normalized_month:
+        return jsonify({"Помилка": "Неправильний формат місяця"}), 400
+    
+    for emp in db:
+        try:
+            if not emp.get('hiring_date') or not emp.get('department'):
+                continue
+
+            emp_hiring_date = emp['hiring_date']
+            emp_department = emp['department'].lower()
+
+            emp_month = datetime.strptime(emp_hiring_date, '%Y-%m-%d').strftime('%m')
+
+            if emp_month == normalized_month and emp_department == department.lower():
+                result["employees"].append({
+                    'id' : emp.get('id'),
+                    'name' : emp.get('full_name'),
+                    'hiring_date' : emp.get('hiring_date')
+                })
+                result["total"] += 1
+        
+        except Exception as e:
+            app.logger.error(f"Помилка обробки співробітника: {str(e)}")
+            continue
+
+    if result['total'] == 0:
+        return jsonify({"Повдомлення" : "Співробітників не знайдено"}), 404
+    
+    return jsonify(result)
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
