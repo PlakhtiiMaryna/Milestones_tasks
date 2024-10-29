@@ -1,7 +1,7 @@
 
-GET /birthdays?month=april&department=Engineer
+GET http://127.0.0.1:5000/birthdays?month=november&department=Marketing
 
 ###
 
-GET /anniversaries?month=april&department=Engineer
+GET http://127.0.0.1:5000//anniversaries?month=april&department=Engineering
 
