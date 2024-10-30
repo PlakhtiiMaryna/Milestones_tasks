@@ -1,7 +1,7 @@
 
-GET http://127.0.0.1:5000/birthdays?month=november&department=Marketing
+GET http://127.0.0.1:5000/birthdays?month=march&department=Marketing
 
 ###
 
-GET http://127.0.0.1:5000//anniversaries?month=січень&department=Marketing
+GET http://127.0.0.1:5000//anniversaries?month=may&department=Marketing
 

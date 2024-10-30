@@ -1,43 +1,40 @@
-from flask import Flask, request, jsonify
-import csv
+import requests
+import sys
+from datetime import datetime
 
-app = Flask(__name__)
+if len(sys.argv) != 3:
+    print ('Вкажіть три аргументи: python fetch_report.py <month> <department>')
+    sys.exit(1)
 
-def read_database (file_name):                              
-    employees = []
-    with open(file_name, mode='r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            employees.append(row) 
-    return employees    
+month, department = sys.argv[1], sys.argv[2]
 
-@app.get('/database/birthdays/< int: month>, <str: department>')
-def get_birthdays (month, department):
-    result = {}
-    for m, dept in file:
-        if m == month and dept == department:
-            return jsonify(result) 
-        elif m != month:
-            return 'Невірно введено місяць'
-        elif dept != department:
-            return 'Невірно введено департамент'
-        else:
-            'Невірно введено вхідні дані. Заповніть коректно місяць та департамент'
+url = 'http://127.0.0.1:5000/birthdays'
+params = {'month' : month, 'department' : department}
 
+try:
+    result = requests.get(url, params=params)
+    result.raise_for_status
 
-@app.get('/database/anniversaries/< int: month>, <str: department>')
-def get_birthdays (month, department):
-    result = {}
-    for m, dept in file:
-        if m == month and dept == department:
-            return jsonify(result) 
-        elif m != month:
-            return 'Невірно введено місяць'
-        elif dept != department:
-            return 'Невірно введено департамент'
-        else:
-            'Невірно введено вхідні дані. Заповніть коректно місяць та департамент'
+except requests.exceptions.RequestException as e:
+    print (f'Помилка отримання звіту {e}')
+    sys.exit(1)
+
+data = result.json()
+
+if 'error' in data:
+    print (data ['error'])
+elif 'message' in data:
+    print (data ['message'])
+else:
+    print(f"Звіт для {department} департамент для {month.capitalize()} сформовано.")
+    print(f"Всього: {data['total']}")
+    print("Спвіробітники:")
+
+for emp in data['employees']:
+    emp_date = datetime.strptime(emp['birthday'], "%Y-%m-%d").strftime("%b %d")
+    print (f'-{emp_date, emp['name']}')
 
 
-if __name__ == '__main__':
-    app.run()
+
+
+
