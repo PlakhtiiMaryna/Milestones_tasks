@@ -8,6 +8,7 @@ fake = Faker()
 def generate_base():
     departments = ['HR', 'Finance', 'Engineering', 'IT', 'Marketing']
     return {
+        'id' : fake.pyint(min_value=1, max_value=10000),
         'full_name' : fake.name(),
         'birthday' : fake.date_of_birth(minimum_age=18, maximum_age=65),
         'department' : choice(departments),
@@ -22,7 +23,7 @@ def generate_base():
 database = [generate_base() for _ in range(100)]
 print (database)
 
-header = ['full_name', 'birthday', 'department', 'phone', 'emal', 'address', 'job', 'hiring_date']
+header = ['id', 'full_name', 'birthday', 'department', 'phone', 'emal', 'address', 'job', 'hiring_date']
 with open('database.csv', 'w') as file:
     writer = csv.DictWriter(file, fieldnames=header)
     writer.writeheader()
